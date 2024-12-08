@@ -1,4 +1,4 @@
-package com.zy.algorithm.book;
+package com.zy.algorithm;
 
 public class MainJ {
 

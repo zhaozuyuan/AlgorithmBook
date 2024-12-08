@@ -37,4 +37,4 @@ build/
 ### Mac OS ###
 .DS_Store
 src/main/java/com/zy/algorithm/book/M.kt
-.idea
+.idea/
