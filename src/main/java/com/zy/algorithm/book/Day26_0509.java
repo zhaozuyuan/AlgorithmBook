@@ -45,6 +45,7 @@ public class Day26_0509 {
         }
 
         // 等于目标值，装下一个桶
+        // 注意，每一个新桶应该从 0 下标开始，因为前面可能有没用过的数字
         if (currentSum == target) {
             return backtrace(nums, used, 0, k - 1, 0, target);
         }
@@ -72,6 +73,11 @@ public class Day26_0509 {
             }
             // 回溯状态，并尝试下一个数字
             used[i] = false;
+
+            // 剪枝，第一个数字都没放进去，直接返回 false，尝试下一个数字即可
+            if (currentSum == 0) {
+                return false;
+            }
         }
 
         return false;
