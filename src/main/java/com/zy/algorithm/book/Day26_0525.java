@@ -30,7 +30,7 @@ public class Day26_0525 {
      * 返回 按字典序最小的字符串，该字符串从这棵树的一个叶结点开始，到根结点结束。
      * 注：字符串中任何较短的前缀在 字典序上 都是 较小 的：
      * 例如，在字典序上 "ab" 比 "aba" 要小。叶结点是指没有子结点的结点。
-     * 988
+     * leetcode.988
      * @return
      */
     private static String sMinString = null;
