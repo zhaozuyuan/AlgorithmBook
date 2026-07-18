@@ -88,6 +88,10 @@ public class Day26_0718 {
         return list.toString();
     }
 
+    /**
+     * 核心：先排序再遍历 + 关键剪枝操作
+     * 注意点: string 比较大小用 compareTo 字典序；Arrays sort 是递增排序。
+     */
     private static String[][] search(String[] products, String searchWord) {
         // 两个语法注意点：
         //  1. string 比较大小的方式 compareTo ，字典序

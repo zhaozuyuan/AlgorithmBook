@@ -3,7 +3,7 @@ package com.zy.algorithm.book;
 public class Day26_0629 {
 
     /**
-     * leetcode 1483
+     * leetcode 1314
      *   📖 题目简介
      *
      *   给定一个 m x n 矩阵 mat 和整数 k，返回矩阵 answer，其中 answer[i][j] 是以 (i, j) 为中心、范围 [i-k, i+k] × [j-k, j+k] 内所有元素之和。
@@ -54,7 +54,7 @@ public class Day26_0629 {
     }
 
     /**
-     * 思路，把每个坐标到 (0,0) 的和计算出来，最后算出矩阵的差即可，O(m*n)
+     * 思路：二维前缀和，“把值转换为面积，然后取面积差”
      */
     private static int[][] getMatrixSum(int[][] mat, int x, int y, int k) {
         int[][] sum_00 = new int[mat.length][mat[0].length];

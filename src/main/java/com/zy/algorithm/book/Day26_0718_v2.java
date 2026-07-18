@@ -56,6 +56,9 @@ public class Day26_0718_v2 {
         System.out.println();
     }
 
+    /**
+     * 核心思路：多源 bfs，把多个起点放进队列，遍历下一层，再把下一层放进队列，再遍历。
+     */
     private static void printMatrix(int[][] matrix) {
         System.out.print("[");
         for (int i = 0; i < matrix.length; i++) {
