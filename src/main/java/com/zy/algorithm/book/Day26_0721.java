@@ -1,11 +1,10 @@
 package com.zy.algorithm.book;
 
-import java.util.Map;
 
 public class Day26_0721 {
 
     /**
-     * leetcode.2284
+     * leetcode.1723
      * 给定一个整数数组 jobs，其中 jobs[i] 是完成第 i 个任务所需的时间。有 k 个工人，每个任务必须分配给恰好一个工人。
      * 一个工人的工作时间是分配给他所有任务时间之和。设计最优分配方案，使任意工人的最大工作时间最小化，并返回这个最小值。
      *
@@ -40,8 +39,7 @@ public class Day26_0721 {
             int expected = (int) testCases[t][2];
 
             // 重置全局状态
-            maxTime = Integer.MAX_VALUE;
-            minTime = Integer.MAX_VALUE;
+            sMinTime = Integer.MAX_VALUE;
 
             int actual = minTime(jobs, k);
 
@@ -52,54 +50,65 @@ public class Day26_0721 {
         }
     }
 
-    // 动态规划，当前的最小值 = 上次的分配情况 + 本次的情况
-    private static int minTime(int[] jobs, int k) {
-        // 人和当前工作量
-        int[][] persons = new int[k][1];
 
-        computeMinTime(persons, jobs, 0);
-        return minTime;
+    private static int minTime(int[] jobs, int k) {
+
+        // 剪枝，倒序排列，更早的触发“当前工人的工作量已经大于最优解，剩下的探索都没有意义”条件
+        java.util.Arrays.sort(jobs);
+        int[] newJobs = new int[jobs.length];
+        for (int i = 0; i < jobs.length; i++) {
+            newJobs[i] = jobs[jobs.length - 1 - i];
+        }
+
+        // 剪枝：sMinTime 用随机算出来的一个组合的最大值。但实现比较麻烦
+
+        int[] personTimeArray = new int[k];
+        computeMinTime(personTimeArray, newJobs, k, 0);
+        return sMinTime;
     }
 
-    // 需要最大时间最小化，也就是耗时最长的工人，他的耗时最小
-    private static int maxTime = Integer.MAX_VALUE;
-    private static int minTime = Integer.MAX_VALUE;
+    private static int sMinTime = Integer.MAX_VALUE;
 
-    private static void computeMinTime(int[][] persons, int[] jobs, int index) {
+    // 关键思路：暴力回溯+剪枝，回溯所有的组合，得出最优解，时间复杂度最差为 O(k^n)
+    private static void computeMinTime(int[] personTimeArray, int[] jobs, int k, int index) {
+        // 代表任务分配完成，然后计算本次是否为最优解
         if (index == jobs.length) {
+            // 耗时最长的工作，是不是所有组合中最小的
+            int maxTime = Integer.MIN_VALUE;
+            for (int time : personTimeArray) {
+                if (time > maxTime) {
+                    maxTime = time;
+                }
+            }
+            if (maxTime < sMinTime) {
+                sMinTime = maxTime;
+            }
+//            System.out.println(java.util.Arrays.toString(personTimeArray));
             return;
         }
 
-        int jobTime = jobs[index];
-        // 遍历所有人，假设当前工作归它
-        for (int i = 0; i < persons.length; ++i) {
-            int time = persons[i][0];
-            persons[i][0] = time + jobTime;
-            computeMinTime(persons, jobs, index + 1);
+        // 每个人的累积工作时间
+        // 假设当前工作分别分配到每个工人时，最佳值是多少
+        for (int i = 0; i < k; i++) {
+            int time = jobs[index];
+            int personTime = personTimeArray[i];
 
-            int[] minAndMaxTime = getMinAndMaxPersonTime(persons);
-            // 需要最大时间最小化，也就是耗时最长的工人，他的耗时最小
-            if (minAndMaxTime[1] < maxTime) {
-                minTime = minAndMaxTime[0];
+            // 剪枝：当前工人的工作量已经大于最优解，剩下的探索都没有意义
+            if (personTimeArray[i] + time > sMinTime) {
+                continue;
             }
 
-            // 回退状态
-            persons[i][0] = time;
+            // 剪枝：相邻两个人的工作量一致，则新增工作放在谁身上都是一样的，都是求后续的最佳组合
+            if (i > 0 && personTimeArray[i] == personTimeArray[i-1]) {
+                continue;
+            }
+
+            personTimeArray[i] = personTime + time;
+            // 递归回溯，直到本次的工作分配完成
+            computeMinTime(personTimeArray, jobs, k, index + 1);
+
+            // 还原状态，分配下一名工人
+            personTimeArray[i] = personTime;
         }
-    }
-
-    private static int[] getMinAndMaxPersonTime(int[][] persons) {
-        int currentMinTime = Integer.MAX_VALUE;
-        int currentMaxTime = Integer.MIN_VALUE;
-        int[] result = new int[]{currentMinTime, currentMaxTime};
-        for (int[] person : persons) {
-            if (person[0] > currentMaxTime) {
-                currentMaxTime = person[0];
-            }
-            if (person[0] < currentMinTime) {
-                currentMinTime = person[0];
-            }
-        }
-        return result;
     }
 }

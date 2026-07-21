@@ -9,11 +9,12 @@ public class Day26_0509 {
     }
 
     /**
+     * leetcode.698
      * 填充子集合，判断 nums 能否拆分成 k 个子集合，每个子集合的和相等
      * 
      * 坑点：贪心算法，每次只会选最近的数字（只要能装进去），可能导致丢失一些数字组合
      * 修复：应当使用回溯算法，每走一步都判断最终能否完成任务，若不能完成则回溯状态，改另一步（就是暴力枚举+剪枝，避免无效尝试）
-=    */
+     */
     public static boolean fillSubCollection(int[] nums, int k) {
         int sum = sumArray(nums);
         if (sum % k != 0) {
