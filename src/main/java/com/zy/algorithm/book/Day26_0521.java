@@ -1,6 +1,26 @@
 package com.zy.algorithm.book;
 
 public class Day26_0521 {
+
+    /**
+     * leetcode.3584
+     * 题目描述
+     * 给你一个整数数组 nums 和一个整数 m。
+     * 返回任意大小为 m 的 子序列 中首尾元素乘积的 最大值。
+     * 子序列 是可以通过删除原数组中的一些元素（或不删除任何元素），且不改变剩余元素顺序而得到的数组。
+     *
+     * ---
+     * 示例 1：
+     * 输入：nums = [-1,-9,2,3,-2,-3,1], m = 1
+     * 输出：81
+     * 解释：子序列 [-9] 的首尾元素乘积最大：-9 * -9 = 81。
+     * ▎ m=1 时，子序列只有一个元素，首尾都是它自己，即求 max(nums[i]²)。
+     *
+     * 示例 2：
+     * 输入：nums = [1,3,-5,5,6,-4], m = 3
+     * 输出：20
+     * 解释：子序列 [-5, 6, -4] 的首尾元素乘积最大：-5 * -4 = 20。
+     */
     public static void main(String[] args) {
         // 测试用例 1: 递增数组, m=2
         int[] nums1 = {1, 2, 3, 4, 5};
@@ -35,88 +55,24 @@ public class Day26_0521 {
         System.out.println("nums10 = {-3, -5, 2, 4}, m=2, result = " + findMaxProduct(nums10, 2) + " (expected = 15, 首元素选-3尾元素选-5: (-3)*(-5)=15)");
     }
 
-    /**
-     * 通过删减元素得到长度为 m 的子数组，求子数组首位元素最大的乘积值
-     * leetcode.3584
-     * @param nums
-     * @param m >= 1 首位元素可以指向同一下标
-     * 
-     * 暴力枚举，就是每个元素都算一下所有子数组，然后找最大乘积值 n^2
-     * 滑动窗口？主要是窗口尺寸不固定，没办法解决
-     * 所以还是剪枝？移动首元素，计算首元素的所有乘积组合：
-     *   1、如果后一位首元素小于前一位首元素，则所有乘积组合一定小于。
-     *   2、如果后一位首元素大于前一位首元素，则需要算后一位首元素的最大乘积，和前一位首元素的最大乘积对比。
-     */
+
+    // 很像暴力回溯，但时间复杂度是指数级
+    // 应该先找规律，尾元素不断向后移动，计算它和最大、最小首元素的乘积
     private static int findMaxProduct(int[] nums, int m) {
-        if (nums.length < 1 || m >= nums.length) {
-            return 0;
-        }
-
-        // 最大乘积的首元素下标
-        int maxProductFirstIndex = 0;
-        // 最大乘积
-        int maxProduct = getMaxProduct(nums, maxProductFirstIndex, maxProductFirstIndex + m - 1);
-
-        for (int i = 0; i < nums.length - m; ++i) {
-            // 下一个首元素
-            int nextI = i + 1;
-            if (nums[nextI] <= nums[maxProductFirstIndex]) {
-                // 代表所有乘积组合都 <= maxProduct，直接跳过
-                continue;
-            }
-
-            // 计算后一位首元素的最大乘积
-            int nextMaxProduct = getMaxProduct(nums, nextI, nextI + m - 1);
-            if (nextMaxProduct > maxProduct) {
-                maxProduct = nextMaxProduct;
-                maxProductFirstIndex = nextI;
-            }
-        }
-        return maxProduct;
-    }
-
-    /**
-     * 最优解
-     * 首元素依次移动，如果能提前知道它的最大乘积尾元素，就不用再计算所有乘积组合了。
-     * 这个逻辑称为“后缀最大值”，重点就是提前把后缀的最大值都罗列出来，而不必重复去查找。
-     */
-    private int findMaxProduct2(int[] nums, int m) {
-        int[] maxLastNums = new int[nums.length];
-        // 最后一个元素最大值就是自己
-        int startLastIndex = nums.length - 1;
-        int maxLastNum = nums[startLastIndex];
-        maxLastNums[startLastIndex] = maxLastNum;
-        for (int j = startLastIndex - 1; j >= 0; --j) {
-            if (maxLastNum < nums[j]) {
-                maxLastNum = nums[j];
-            }
-            maxLastNums[j] = maxLastNum;
-        }
-
+        int maxHead = nums[0];
+        int minHead = nums[0];
         int maxProduct = Integer.MIN_VALUE;
-        for (int i = 0; i <= nums.length - m; ++i) {
-            int product = nums[i] * maxLastNums[i + m - 1];
-            if (product > maxProduct) {
-                maxProduct = product;
+        for (int i = m - 1; i < nums.length; i++) {
+            int newHead = nums[i + 1 - m];
+            if (newHead > maxHead) {
+                maxHead = newHead;
+            } else if (newHead < minHead) {
+                minHead = newHead;
             }
+
+            int currentMaxProduct = nums[i] * (nums[i] > 0 ? maxHead : minHead);
+            maxProduct = Math.max(maxProduct, currentMaxProduct);
         }
         return maxProduct;
-    }
-
-    /**
-     * 计算所有首元素的所有乘积组合，找出最大值
-     * @param nums
-     * @param i 首元素下标，不变
-     * @param j 尾元素的起始下标
-     */
-    private static int getMaxProduct(int[] nums, int i, int j) {
-        int product = nums[i] * nums[j];
-        for (int k = j + 1; k < nums.length; ++k) {
-            int newProduct = nums[i] * nums[k];
-            if (newProduct > product) {
-                product = newProduct;
-            }
-        }
-        return product;
     }
 }
