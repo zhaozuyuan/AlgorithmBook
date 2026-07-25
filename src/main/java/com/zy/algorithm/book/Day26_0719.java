@@ -64,41 +64,22 @@ public class Day26_0719 {
     }
 
     /**
-     * 核心思路：动态规划，推导公式 n = x 子串是否可达 + (n - x) 且 (n - x) in wordDict
+     * 核心思路：动态规划
+     *  dp[i] = dp[i-n] 为 true + s[n,i] 在字典里面
      */
     private static boolean wordBreak(String s, List<String> wordDict) {
-        Boolean[] dp = new Boolean[s.length() + 1];
+        boolean[] dp = new boolean[s.length() + 1];
         dp[0] = true;
 
-
-        return isDp(dp, s, s.length(), new HashSet<>(wordDict));
-    }
-
-    // dp[i] 表示 s 的前 i 个字符组成的字符串是否可达
-    // 计算 s[0,length) 是否可达
-    private static boolean isDp(
-            Boolean[] dp,
-            String s,
-            int length,
-            Set<String> wordDict
-    ) {
-        if (length < 1) {
-            return true;
-        }
-        // i 代表字符串长度
-        for (int i = (length - 1); i >= 0; --i) {
-            String sub = s.substring(i, length);
-            if (wordDict.contains(sub)) {
-                // 复用缓存
-                if (dp[i] == null) {
-                    dp[i] = isDp(dp, s, i, wordDict);
-                }
-                if (dp[i]) {
-                    dp[length] = true;
-                    return true;
+        for (int i = 1; i <= s.length(); i++) {
+            for (int n = 1; n <= i; n++) {
+                if (dp[i - n] && wordDict.contains(s.substring(i - n, i))) {
+                    dp[i] = true;
+                    break;
                 }
             }
         }
-        return false;
+
+        return dp[s.length()];
     }
 }
