@@ -56,7 +56,7 @@ public class Day26_0521 {
     }
 
 
-    // 很像暴力回溯，但时间复杂度是指数级
+    // 很像暴力回溯，但暴力回溯的时间复杂度是指数级
     // 应该先找规律，尾元素不断向后移动，计算它和最大、最小首元素的乘积
     private static int findMaxProduct(int[] nums, int m) {
         int maxHead = nums[0];
