@@ -1,44 +1,43 @@
 package com.zy.algorithm.book;
 
 public class Day26_0513 {
+
+    /**
+     * leetcode.3724
+     * 给你两个整数数组 nums1（长度 n）和 nums2（长度 n+1），要用最少操作把 nums1 变成 nums2。
+     * 每次可以选一个下标 i，执行以下操作之一：
+     * - nums1[i] 增加 1
+     * - nums1[i] 减少 1
+     * - 将 nums1[i] 追加 到数组末尾
+     */
     public static void main(String[] args) {
         System.out.println("result:" + (fillNums2(new int[]{1,3,6}, new int[]{2,4,5,3}) == 4));
     }
 
-    /**
-     * leetcode.3724
-     * 将 num1 转换成 nums2，并找出最少的操作次数
-     * 操作：
-     * 1. nums1[i] 通过加减1变成 nums2[i]，每次加减记为1次
-     * 2. 可以通过复制的方式把 nums1[i] 追加到 nums2[n] 上
-     * @param nums1 size=n
-     * @param nums2 size=n+1
-     */
+    // 核心思路，贪心算法，找到本次的最优解
     private static int fillNums2(int[] nums1, int[] nums2) {
-        int result = 0;
-        int targetNum = nums2[nums1.length - 1];
-        int additionalCount = Integer.MAX_VALUE;
-        for (int i = 0; i < nums1.length; ++i) {
-            int x = Math.max(nums1[i], nums2[i]);
-            int y = Math.min(nums1[i], nums2[i]);
+       int targetNum = nums2[nums2.length - 1];
+       int targetMinDiffValue = Integer.MAX_VALUE;
+       int count = 0;
+       for (int i = 0; i < nums1.length; i++) {
+           count += Math.abs(nums1[i] - nums2[i]);
+           if (targetMinDiffValue > 0) {
+               if (nums1[i] <= nums2[i] && nums1[i] <= targetNum && targetNum <= nums2[i]) {
+                   targetMinDiffValue = 0;
+               }
+               if (nums1[i] >= nums2[i] && nums1[i] >= targetNum && targetNum >= nums2[i]) {
+                   targetMinDiffValue = 0;
+               }
+               if (targetMinDiffValue != 0) {
+                   int diffValue = Math.min(Math.abs(targetNum-nums1[i]), Math.abs(targetNum-nums2[i]));
+                   if (diffValue < targetMinDiffValue) {
+                       targetMinDiffValue = diffValue;
+                   }
+               }
+           }
+       }
 
-            // 必须要操作的次数
-            result += (x - y);
-
-            // 剪枝：证明已经是最少的额外操作次数了
-            if (additionalCount == 1) {
-                continue;
-            }
-
-            // 在数字区间，则中间肯定可以直接 copy 过去，次数为1
-            // 不在数字区间，则需要的加减操作
-            if (x >= targetNum && targetNum <= y) {
-                additionalCount = 1;
-            } else {
-                int current = 1 + Math.min(Math.abs(targetNum - x), Math.abs(targetNum - y));
-                additionalCount = Math.min(additionalCount, current);
-            }
-        }
-        return additionalCount + result;
+       // 1 代表拷贝到 nums2 最后一位的操作
+       return count + 1 + targetMinDiffValue;
     }
 }
