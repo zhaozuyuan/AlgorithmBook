@@ -1,9 +1,29 @@
 package com.zy.algorithm.book;
 
-import java.util.List;
-
 public class Day26_0525 {
 
+    /**
+     * 题目描述
+     * 给定一颗根结点为 root 的二叉树，树中的每一个结点都有一个 [0, 25] 范围内的值，分别代表字母 'a' 到 'z'。
+     * 返回 按字典序最小 的字符串，该字符串从这棵树的一个叶结点开始，到根结点结束。
+     * ▎ 注：字符串中任何较短的前缀在字典序上都是较小的。例如 "ab" 比 "aba" 要小。叶结点是指没有子结点的结点。
+     *
+     * 示例 1：
+     * 输入：root = [0,1,2,3,4,3,4]
+     * 输出："dba"
+     *
+     *       a(0)
+     *      /    \
+     *    b(1)   c(2)
+     *    / \    / \
+     *  d(3) e(4) d(3) e(4)
+     *
+     * 叶→根路径：
+     *   3→1→0: "dba"  ← 最小
+     *   4→1→0: "eba"
+     *   3→2→0: "dca"
+     *   4→2→0: "eca"
+     */
     public static void main(String[] args) {
         // 测试用例1: root = [25,1,3,1,3,0,2], 输出: "adz"
         Node root1 = new Node(25);
@@ -25,43 +45,35 @@ public class Day26_0525 {
         System.out.println("测试2: " + findMinString(root2) + " (期望: abc)");
     }
 
-    /**
-     * 给定一颗根结点为 root 的二叉树，树中的每一个结点都有一个 [0, 25] 范围内的值，分别代表字母 'a' 到 'z'。
-     * 返回 按字典序最小的字符串，该字符串从这棵树的一个叶结点开始，到根结点结束。
-     * 注：字符串中任何较短的前缀在 字典序上 都是 较小 的：
-     * 例如，在字典序上 "ab" 比 "aba" 要小。叶结点是指没有子结点的结点。
-     * leetcode.988
-     * @return
-     */
-    private static String sMinString = null;
-    private static String findMinString(Node root) {
-        dfs(root, new StringBuilder());
+    // dfs 深度遍历 + 回溯。 (bfs 是广播遍历)
+    private static String findMinString(Node node) {
+        sMinString = null;
+        dfs(node, new StringBuilder());
         return sMinString;
     }
 
-    // 深度遍历，把每种字符串拼接出来
-    private static void dfs(Node node, StringBuilder stringBuilder) {
-        if (node == null) {
-            return;
-        }
+    private static String sMinString = null;
+    private static void dfs(Node node, StringBuilder builder) {
+        builder.append((char) (node.value + 'a'));
 
-        stringBuilder.append((char) (node.value + 'a'));
-        // 叶子节点
+        // 代表 dfs 一轮结束
         if (node.left == null && node.right == null) {
-            // reverse StringBuilder 翻转字符串方法
-            String currentString = stringBuilder.reverse().toString();
-            if (sMinString == null || sMinString.compareTo(currentString) >= 0) {
+            String currentString = builder.reverse().toString();
+            if (sMinString == null || currentString.compareTo(sMinString) < 0) {
                 sMinString = currentString;
             }
-            // 最后需要翻转回来
-            stringBuilder.reverse();
+            builder.reverse();
+        } else {
+            if (node.left != null) {
+                dfs(node.left, builder);
+            }
+            if (node.right != null) {
+                dfs(node.right, builder);
+            }
         }
 
-        dfs(node.left, stringBuilder);
-        dfs(node.right, stringBuilder);
-
-        // 最关键步骤，已经遍历完成的节点，需要删除
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1); 
+        // 一次遍历结束，回退当前值
+        builder.deleteCharAt(builder.length() - 1);
     }
 
     static class Node {
