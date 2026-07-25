@@ -34,40 +34,34 @@ public class Day26_0724 {
         for (int[] c : cases) {
             int n = c[0];
             int expected = c[1];
-            int actual = numTrees(n, new java.util.HashMap<>());
+            int actual = numTrees(n);
             String pass = actual == expected ? "PASS" : "FAIL";
             System.out.printf("n=%-2d  预期=%-12d  实际=%-12d  %s%n",
                     n, expected, actual, pass);
         }
     }
 
-    // 不需要回溯树的结构，而是方程推导
-    // 整个树可以拆分为最小子结构，n == 0、n == 1、n == 2、n == 3
-    // 加上缓存后，时间复杂度为 O(n^2)
-    private static int numTrees(int n, Map<Integer, Integer> cache) {
-        if (cache.containsKey(n)) {
-            return cache.get(n);
-        }
-        if (n == 0 || n == 1) {
+    // 核心思路，节点数为 n 时，假设左子节点为i，右子节点就为 n-i-1，i为[0,n-1]
+    // 动态规划
+    //   dp[n] = (dp[0] * dp[n-1]) + (dp[1] * dp[n-2]) + ... + (dp[n-1] * dp[0])
+    private static int numTrees(int n) {
+        if (n < 2) {
             return 1;
         }
-        if (n == 2) {
-            return 2;
-        }
-        if (n == 3) {
-            return 5;
-        }
 
-        // f(1)=1, f(2)=2, f(3)=5
-        // 树的最小组成单位就这三种
-        int count = 0;
-        for (int i = 0; i < n; ++i) {
-            int leftCount = i;
-            int rightCount = n - i - 1; // 减1是为了去掉根节点
-            count += (numTrees(leftCount, cache) * numTrees(rightCount, cache));
-        }
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
 
-        cache.put(n, count);
-        return count;
+        for (int i = 2; i <= n; ++i) {
+
+            // (dp[0] * dp[n-1]) + (dp[1] * dp[n-2]) + ... + (dp[n-1] * dp[0])
+            int result = 0;
+            for (int j = 0; j < i; ++j) {
+                result += (dp[j] * dp[i - j - 1]);
+            }
+            dp[i] = result;
+        }
+        return dp[n];
     }
 }
