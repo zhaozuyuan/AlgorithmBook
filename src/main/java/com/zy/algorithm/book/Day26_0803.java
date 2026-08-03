@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class Day26_0803 {
 
     /**
-     * 2054. 两个最好的不重叠活动
+     * leetcode.2054 两个最好的不重叠活动
      *
      * 题目描述：
      * 给你一个二维整数数组 events，其中 events[i] = [startTimeᵢ, endTimeᵢ, valueᵢ]。第 i 个活动从 startTimeᵢ 开始，到 endTimeᵢ 结束，参加该活动会获得价值 valueᵢ。
