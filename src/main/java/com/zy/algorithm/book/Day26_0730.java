@@ -8,7 +8,7 @@ import java.util.Set;
 public class Day26_0730 {
 
     /**
-     * 题目描述
+     * leetcode.560 题目描述
      * 给你一个整数数组 nums 和一个整数 k，请你统计并返回该数组中和为 k 的连续子数组的个数。
      * 子数组是数组中连续非空的元素序列。
      *
